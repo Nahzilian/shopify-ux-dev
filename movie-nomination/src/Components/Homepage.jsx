@@ -4,14 +4,18 @@ import FadeIn from 'react-fade-in'
 const baseAPI = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=`
 
 function Card(props, recall, type) {
+    var paramCall;
+    if(type === "nominate"){ 
+        paramCall = props
+    }else{
+        paramCall = props.imdbID
+    }
     return (
-        <div className="card">
+        <div className="card col-2" onClick={() => recall(paramCall)} style = {{backgroundImage:`url(${props.Poster})`, backgroundRepeat:'no-repeat', backgroundSize:'cover'}}>
             <h3>{props.Title} - ({props.Year})</h3>
-            <p></p>
-            {type === "nominate" ?
-                <button onClick={() => recall(props)}>Nominate</button> :
-                <button onClick={() => recall(props.imdbID)}>Remove</button>
-            }
+            <div className = "content">
+                <div class="text"> {type === "nominate"?"Nominate":"Remove"}</div>
+            </div>
         </div>
     )
 }
@@ -42,6 +46,7 @@ export default function Homepage() {
                 var maxPage = Math.floor(len / pageLimit) + 1;
                 var temp = []
                 var indexData = []
+                
                 for (var i = 1; i < maxPage; i++) {
                     temp.push(i);
                     indexData.push(res.data.Search.slice((i-1)*pageLimit, i * pageLimit));
@@ -65,7 +70,6 @@ export default function Homepage() {
         } else {
 
         }
-
     }
 
     const onChangeHandler = (e) => {
@@ -80,6 +84,7 @@ export default function Homepage() {
     return (
         <div className="wrapper">
             <div className="col-3 search-wrapper">
+                <h1>Nomination</h1>
                 <div>
                     <form onSubmit={submitHandler}>
                         <div className="col-8">
@@ -95,16 +100,17 @@ export default function Homepage() {
                         </div>
                     </form>
                     <div className="results">
-                        {prevQuery ? <div><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4><hr /></div> : null}
+                        {prevQuery ? <div><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div> : null}
                         <div className = "pagination">
                             {pageIndex.length > 0? 
-                            pageIndex.map(x => <div className = "page-index" onClick = {() => changePage(x)}>{parseInt(x) === parseInt(currentPage)?<u>{x}</u>:x}</div>):null}
+                            pageIndex.map(x => <div className = "page-index" onClick = {() => changePage(x)}>{parseInt(x) === parseInt(currentPage)?<u className = "selected">{x}</u>:x}</div>):null}
                         </div>
+                        <hr />
                         {currentData.length > 0 ? <FadeIn>{currentData.map(x => Card(x, nominate, "nominate"))}</FadeIn> : null}
                     </div>
                 </div>
             </div>
-            <div className="col-3">
+            <div className="col-3 result-wrapper">
                 {nominatedList.length > 0 ? nominatedList.map(x => Card(x, removeNominate, "remove")) : "No data found"}
             </div>
         </div>
