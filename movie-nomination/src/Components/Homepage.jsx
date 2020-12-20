@@ -44,12 +44,21 @@ export default function Homepage() {
 
     const [currentSelectedPage, setCurSelectedPage] = useState(1);
     const [currentSelectedData, setCurSelectedData] = useState([]);
-    const [selectedPageIndex, setSelectedPageIndex] = useState([]);
+    const [selectedPageIndex, setSelectedPageIndex] = useState([1]);
     const nominate = (data) => {
-        if (!nominatedList.includes(data)){
-            var temp = nominatedList.concat([data])
-            setNominatedList(temp)
-            
+        if (!nominatedList.includes(data)) {
+            var temp = nominatedList.concat([data]);
+            var maxPage = Math.floor(temp.length / pageLimit) + 1;
+            var index;
+            if (selectedPageIndex[selectedPageIndex.length - 1] === maxPage) {
+                index = selectedPageIndex[selectedPageIndex.length - 1]
+            } else {
+                index = maxPage;
+                setSelectedPageIndex(selectedPageIndex.concat(index));
+            }
+            setNominatedList(temp);
+            setCurSelectedData(temp.slice((index - 1) * pageLimit, index * pageLimit));
+            setCurSelectedPage(index)
         }
     }
 
@@ -57,8 +66,9 @@ export default function Homepage() {
         setNominatedList(nominatedList.filter(x => !(x.imdbID === imdbID)))
     }
 
-    const changeSelectedPage = () => {
-
+    const changeSelectedPage = (index) => {
+        setCurSelectedPage(index);
+        setCurSelectedData(nominatedList.slice((index - 1) * pageLimit, index * pageLimit))
     }
 
     const apiCall = (query) => {
@@ -144,10 +154,10 @@ export default function Homepage() {
                         <div className="col-6 result-wrapper">
                             <div><h4>Nominations</h4></div>
                             <div className="paging">
-                                {pageIndex.length > 0 ?
-                                    pageIndex.map(x => <div className="page-index" onClick={() => changePage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
+                                {selectedPageIndex.length > 0 ?
+                                    selectedPageIndex.map(x => <div className="page-index" onClick={() => changeSelectedPage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
                             </div>
-                            {nominatedList.length > 0 ? <div className="row">{nominatedList.map(x => Card(x, removeNominate, "remove", nominatedList))}</div> : ""}
+                            {currentSelectedData.length > 0 ? <div className="row">{currentSelectedData.map(x => Card(x, removeNominate, "remove", nominatedList))}</div> : ""}
                         </div>
                     </div>
                 </div>
