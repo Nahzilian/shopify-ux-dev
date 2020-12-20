@@ -48,12 +48,17 @@ export default function Homepage() {
     const nominate = (data) => {
         if (!nominatedList.includes(data)) {
             var temp = nominatedList.concat([data]);
-            var maxPage = Math.floor(temp.length / pageLimit) + 1;
+            var maxPage;
+            if (temp.length % pageLimit === 0) {
+                maxPage = Math.floor(temp.length / pageLimit);
+            } else {
+                maxPage = Math.floor(temp.length / pageLimit) + 1;
+            }
             var index;
-            var lastElement = selectedPageIndex[selectedPageIndex.length - 1] 
+            var lastElement = selectedPageIndex[selectedPageIndex.length - 1]
             if (lastElement === maxPage) {
                 index = lastElement
-            } else if( lastElement < maxPage){
+            } else if (lastElement < maxPage) {
                 index = maxPage;
                 setSelectedPageIndex(selectedPageIndex.concat(index));
             }
@@ -66,20 +71,27 @@ export default function Homepage() {
     const removeNominate = (imdbID) => {
         var temp = nominatedList.filter(x => !(x.imdbID === imdbID));
         setNominatedList(temp);
-        var maxPage = Math.floor(temp.length / pageLimit) + 1;
-        var index;
-        var lastElement = selectedPageIndex[selectedPageIndex.length - 1]
-        if (lastElement === maxPage) {
-            index = lastElement;
-        } else if(lastElement > maxPage) {
-            index = maxPage;
-            selectedPageIndex.pop()
-            if(selectedPageIndex.length === 0){
+        var maxPage;
+        if (temp.length % pageLimit === 0) {
+            selectedPageIndex.pop();
+            if (selectedPageIndex.length === 0) {
                 setSelectedPageIndex([1]);
             }
-            
+            maxPage = Math.floor(temp.length / pageLimit);
+            setCurSelectedPage(maxPage)
+            setCurSelectedData(temp.slice((maxPage - 1) * pageLimit, maxPage * pageLimit));
+        } else {
+            maxPage = Math.floor(temp.length / pageLimit) + 1;
+            var lastElement = selectedPageIndex[selectedPageIndex.length - 1];
+            if (lastElement > maxPage) {
+                selectedPageIndex.pop()
+                if (selectedPageIndex.length === 0) {
+                    setSelectedPageIndex([1]);
+                }
+            }
+            setCurSelectedData(temp.slice((currentSelectedPage - 1) * pageLimit, currentSelectedPage * pageLimit));
         }
-        setCurSelectedData(temp.slice((currentSelectedPage - 1) * pageLimit, currentSelectedPage * pageLimit));
+
     }
 
     const changeSelectedPage = (index) => {
@@ -177,8 +189,6 @@ export default function Homepage() {
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     )
