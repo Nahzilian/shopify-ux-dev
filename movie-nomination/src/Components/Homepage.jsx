@@ -50,9 +50,10 @@ export default function Homepage() {
             var temp = nominatedList.concat([data]);
             var maxPage = Math.floor(temp.length / pageLimit) + 1;
             var index;
-            if (selectedPageIndex[selectedPageIndex.length - 1] === maxPage) {
-                index = selectedPageIndex[selectedPageIndex.length - 1]
-            } else {
+            var lastElement = selectedPageIndex[selectedPageIndex.length - 1] 
+            if (lastElement === maxPage) {
+                index = lastElement
+            } else if( lastElement < maxPage){
                 index = maxPage;
                 setSelectedPageIndex(selectedPageIndex.concat(index));
             }
@@ -63,7 +64,22 @@ export default function Homepage() {
     }
 
     const removeNominate = (imdbID) => {
-        setNominatedList(nominatedList.filter(x => !(x.imdbID === imdbID)))
+        var temp = nominatedList.filter(x => !(x.imdbID === imdbID));
+        setNominatedList(temp);
+        var maxPage = Math.floor(temp.length / pageLimit) + 1;
+        var index;
+        var lastElement = selectedPageIndex[selectedPageIndex.length - 1]
+        if (lastElement === maxPage) {
+            index = lastElement;
+        } else if(lastElement > maxPage) {
+            index = maxPage;
+            selectedPageIndex.pop()
+            if(selectedPageIndex.length === 0){
+                setSelectedPageIndex([1]);
+            }
+            
+        }
+        setCurSelectedData(temp.slice((currentSelectedPage - 1) * pageLimit, currentSelectedPage * pageLimit));
     }
 
     const changeSelectedPage = (index) => {
