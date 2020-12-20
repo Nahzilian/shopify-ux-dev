@@ -34,17 +34,24 @@ function Card(props, recall, type, nomList) {
 export default function Homepage() {
     const [userQuery, setUserQuery] = useState(null);
     const [data, setQueryData] = useState(null);
-    const [nominatedList, setNominatedList] = useState([]);
+    const [nominatedList, setNominatedList] = useState(JSON.parse(localStorage.getItem("nominatedList")) || []);
     const [prevQuery, setPrevQuery] = useState(null);
     const [dataCount, setDataCount] = useState(0);
     const pageLimit = 6;
     const [pageIndex, setPageIndex] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentData, setCurrentData] = useState([]);
+    const [currentSelectedPage, setCurSelectedPage] = useState(JSON.parse(localStorage.getItem("currentSelectedPage")) || 1);
+    const [currentSelectedData, setCurSelectedData] = useState(JSON.parse(localStorage.getItem("currentSelectedData")) || []);
+    const [selectedPageIndex, setSelectedPageIndex] = useState(JSON.parse(localStorage.getItem("selectedPageIndex")) || [1]);
 
-    const [currentSelectedPage, setCurSelectedPage] = useState(1);
-    const [currentSelectedData, setCurSelectedData] = useState([]);
-    const [selectedPageIndex, setSelectedPageIndex] = useState([1]);
+    window.onbeforeunload = () => {
+        localStorage.setItem("currentSelectedData", JSON.stringify(currentSelectedData));
+        localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
+        localStorage.setItem("nominatedList", JSON.stringify(nominatedList));
+        localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
+    }
+
     const nominate = (data) => {
         if (!nominatedList.includes(data)) {
             var temp = nominatedList.concat([data]);
@@ -67,7 +74,6 @@ export default function Homepage() {
             setCurSelectedPage(index)
         }
     }
-
     const removeNominate = (imdbID) => {
         var temp = nominatedList.filter(x => !(x.imdbID === imdbID));
         setNominatedList(temp);
