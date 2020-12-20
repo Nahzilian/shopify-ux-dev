@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios'
 import FadeIn from 'react-fade-in'
+import { ReactComponent as Award } from './assets/award.svg'
+import { ReactComponent as EmptyClip } from './assets/clip.svg'
+import { ReactComponent as Typing } from './assets/typing.svg'
 const baseAPI = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=`
 
 
@@ -12,8 +15,24 @@ function Card(props, recall, type, nomList) {
         paramCall = props.imdbID
     }
     var nominated = nomList.includes(props) ? "Nominated" : "Nominate";
+    if (props.Poster === "N/A")
+        return (
+            <div className="col-6">
+                <FadeIn>
+                    <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
+                        <div className="card-body">
+                            <h5 className="card-title">{props.Title} - ({props.Year})</h5>
+                        </div>
+                        <div className="content">
+                            <div class="text">
+                                {type === "nominate" ? nominated : "Remove"}
+                            </div>
+                        </div>
+                    </div>
+                </FadeIn>
+            </div>
+        )
     return (
-
         <div className="col-6">
             <FadeIn>
                 <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
@@ -44,14 +63,19 @@ export default function Homepage() {
     const [currentSelectedPage, setCurSelectedPage] = useState(JSON.parse(localStorage.getItem("currentSelectedPage")) || 1);
     const [currentSelectedData, setCurSelectedData] = useState(JSON.parse(localStorage.getItem("currentSelectedData")) || []);
     const [selectedPageIndex, setSelectedPageIndex] = useState(JSON.parse(localStorage.getItem("selectedPageIndex")) || [1]);
-
+    const [isSearched, setIsSearched] = useState(false);
+    
     window.onbeforeunload = () => {
         localStorage.setItem("currentSelectedData", JSON.stringify(currentSelectedData));
         localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
         localStorage.setItem("nominatedList", JSON.stringify(nominatedList));
         localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
     }
-
+    useEffect(() => {
+        if(nominatedList.length > 0){
+            setIsSearched(true);
+        }
+    },[])
     const nominate = (data) => {
         var compareElement = data.imdbID;
         var listOfimdbID = nominatedList.map(x => x.imdbID);
@@ -123,6 +147,7 @@ export default function Homepage() {
                 setPageIndex(temp);
                 setQueryData(indexData)
                 setCurrentData(indexData[0])
+                setIsSearched(true)
             }).catch((err) => console.error(err))
     }
 
@@ -150,53 +175,70 @@ export default function Homepage() {
     }
     return (
         <div className="container">
-            <br />
-            <div className="col">
-                <div className="row search-box">
-                    <h1>The Shoppies</h1>
-                    <br />
-                    <form onSubmit={submitHandler}>
-                        <lable><strong>Movie title</strong></lable>
-                        <div className="row">
-                            <div className="col-10">
-                                <input className="effect-9" type="text" placeholder="Look for movie ..." onChange={(e) => onChangeHandler(e)} />
-                                <span className="focus-border">
-                                    <i></i>
-                                </span>
-                            </div>
-                            <div className="col-2">
-                                <button className="btn btn-info" type="submit">
-                                    <span><i className="fas fa-search"></i> Search</span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
+            <FadeIn>
                 <br />
-                <div className="search-wrapper row">
-                    <div className="row">
-                        <div className="col-6 left-board">
-                            {prevQuery ? <div><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div> : null}
-                            <div className="results">
-                                <div className="paging">
-                                    {pageIndex.length > 0 ?
-                                        pageIndex.map(x => <div className="page-index" onClick={() => changePage(x)}>{parseInt(x) === parseInt(currentPage) ? <u className="selected">{x}</u> : x}</div>) : null}
+                <div className="col">
+                    <div className="row search-box">
+                        <h1>The Shoppies</h1>
+                        <br />
+                        <form onSubmit={submitHandler}>
+                            <lable><strong>Movie title</strong></lable>
+                            <div className="row">
+                                <div className="col-10">
+                                    <input className="effect-9" type="text" placeholder="Look for movie ..." onChange={(e) => onChangeHandler(e)} />
+                                    <span className="focus-border">
+                                        <i></i>
+                                    </span>
                                 </div>
-                                {currentData.length > 0 ? <div className="row">{currentData.map(x => Card(x, nominate, "nominate", nominatedList))}</div> : null}
+                                <div className="col-2">
+                                    <button className="btn btn-info" type="submit">
+                                        <span><i className="fas fa-search"></i> Search</span>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div className="col-6 result-wrapper">
-                            <div><h4>Nominations</h4></div>
-                            <div className="paging">
-                                {selectedPageIndex.length > 0 ?
-                                    selectedPageIndex.map(x => <div className="page-index" onClick={() => changeSelectedPage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
-                            </div>
-                            {currentSelectedData.length > 0 ? <div className="row">{currentSelectedData.map(x => Card(x, removeNominate, "remove", nominatedList))}</div> : ""}
-                        </div>
+                        </form>
                     </div>
+
+                    <br />
+                    {isSearched ?
+                        <div className="search-wrapper row">
+                            <div className="row">
+                                <div className="col-6 left-board">
+                                    {prevQuery ? <div><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div> : null}
+                                    <div className="results">
+                                        <div className="paging">
+                                            {pageIndex.length > 0 ?
+                                                pageIndex.map(x => <div className="page-index" onClick={() => changePage(x)}>{parseInt(x) === parseInt(currentPage) ? <u className="selected">{x}</u> : x}</div>) : null}
+                                        </div>
+                                        {currentData.length > 0 ? <div className="row">{currentData.map(x => Card(x, nominate, "nominate", nominatedList))}</div> :
+                                            <div><Typing /></div>}
+                                    </div>
+                                </div>
+                                <div className="col-6 result-wrapper">
+                                    <div><h4>Nominations</h4></div>
+                                    <div className="paging">
+                                        {selectedPageIndex.length > 0 ?
+                                            selectedPageIndex.map(x => <div className="page-index" onClick={() => changeSelectedPage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
+                                    </div>
+                                    {currentSelectedData.length > 0 ? <div className="row">{currentSelectedData.map(x => Card(x, removeNominate, "remove", nominatedList))}</div> :
+                                        <div>
+                                            <EmptyClip />
+                                        </div>}
+                                </div>
+                            </div>
+                        </div> :
+                        <div className="search-wrapper row">
+                            <div className="col-6">
+                                <Award />
+                            </div>
+                            <div className="col-6">
+                                <h1>Time for some query</h1>
+                            </div>
+                        </div>
+
+                    }
                 </div>
-            </div>
+            </FadeIn>
         </div>
     )
 }
