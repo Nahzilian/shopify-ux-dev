@@ -17,7 +17,7 @@ function Card(props, recall, type, nomList) {
         <div className="col-6">
             <FadeIn>
                 <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
-                    <img className="card-img-top" src={props.Poster} alt="Card image cap" />
+                    <img className="card-img-top" src={props.Poster} alt="Movie poster" />
                     <div className="content">
                         <div class="text">
                             {props.Title}<br />
@@ -53,7 +53,9 @@ export default function Homepage() {
     }
 
     const nominate = (data) => {
-        if (!nominatedList.includes(data)) {
+        var compareElement = data.imdbID;
+        var listOfimdbID = nominatedList.map(x => x.imdbID);
+        if (!listOfimdbID.includes(compareElement)) {
             var temp = nominatedList.concat([data]);
             var maxPage;
             if (temp.length % pageLimit === 0) {
@@ -121,7 +123,6 @@ export default function Homepage() {
                 setPageIndex(temp);
                 setQueryData(indexData)
                 setCurrentData(indexData[0])
-                console.log(indexData[0])
             }).catch((err) => console.error(err))
     }
 
