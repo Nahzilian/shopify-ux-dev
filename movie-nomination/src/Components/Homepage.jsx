@@ -4,7 +4,7 @@ import FadeIn from 'react-fade-in'
 import { ReactComponent as Award } from './assets/award.svg'
 import { ReactComponent as EmptyClip } from './assets/clip.svg'
 import { ReactComponent as Typing } from './assets/typing.svg'
-const baseAPI = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=`
+const baseAPI = `http://www.omdbapi.com/?apikey=9beeb635&s=`
 
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
