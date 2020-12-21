@@ -240,12 +240,12 @@ export default function Homepage() {
                                         <div className="col-10"><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div>
                                         <div className="col-2">
                                             <div className="dropdown">
-                                                <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <button className="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Filter by year
                                                 </button>
                                                 {listOfYears.length > 0 ?
                                                     <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        {listOfYears.map(x => <a className="dropdown-item" href="#" onClick={()=>filterDataByYear(x)}>{x}</a>)}
+                                                        {listOfYears.map(x => <a className="dropdown-item" href="#" onClick={() => filterDataByYear(x)}>{x}</a>)}
                                                     </div> :
                                                     <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <a className="dropdown-item" href="#">No record found!</a>
@@ -294,7 +294,8 @@ export default function Homepage() {
                         <div className="col-6">
                             <Award />
                         </div>
-                        <div className="col-6">
+                        <div className="col-6 landing-context">
+
                             <h2 className="title underline">Movie nominations</h2>
                             <br />
                             <p>Love watching movies? Want to nominate your favourite film? The Shoppies movie nomination a solution for you!</p>
@@ -303,6 +304,7 @@ export default function Homepage() {
                                 <li>Look up for your favorite movies within seconds!</li>
                                 <li>Save your nominees for future reference!</li>
                             </ul>
+
                         </div>
                     </div>}
                 <br />

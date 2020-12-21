@@ -294,3 +294,11 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: #333; width
 .btn-info{
   height: 100%;
 }
+
+.landing-context{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
