@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/shopify-ux-dev/static/css/main.2361e3e3.chunk.css",
+    "main.js": "/shopify-ux-dev/static/js/main.82b5897c.chunk.js",
+    "main.js.map": "/shopify-ux-dev/static/js/main.82b5897c.chunk.js.map",
+    "runtime-main.js": "/shopify-ux-dev/static/js/runtime-main.95f2402d.js",
+    "runtime-main.js.map": "/shopify-ux-dev/static/js/runtime-main.95f2402d.js.map",
+    "static/js/2.e428cf01.chunk.js": "/shopify-ux-dev/static/js/2.e428cf01.chunk.js",
+    "static/js/2.e428cf01.chunk.js.map": "/shopify-ux-dev/static/js/2.e428cf01.chunk.js.map",
+    "static/js/3.2f3e66cd.chunk.js": "/shopify-ux-dev/static/js/3.2f3e66cd.chunk.js",
+    "static/js/3.2f3e66cd.chunk.js.map": "/shopify-ux-dev/static/js/3.2f3e66cd.chunk.js.map",
+    "index.html": "/shopify-ux-dev/index.html",
+    "static/css/main.2361e3e3.chunk.css.map": "/shopify-ux-dev/static/css/main.2361e3e3.chunk.css.map",
+    "static/js/2.e428cf01.chunk.js.LICENSE.txt": "/shopify-ux-dev/static/js/2.e428cf01.chunk.js.LICENSE.txt",
+    "static/media/award.d3ba6d57.svg": "/shopify-ux-dev/static/media/award.d3ba6d57.svg",
+    "static/media/clip.c374e5a9.svg": "/shopify-ux-dev/static/media/clip.c374e5a9.svg",
+    "static/media/typing.aaf1d4ba.svg": "/shopify-ux-dev/static/media/typing.aaf1d4ba.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.95f2402d.js",
+    "static/js/2.e428cf01.chunk.js",
+    "static/css/main.2361e3e3.chunk.css",
+    "static/js/main.82b5897c.chunk.js"
+  ]
+}
