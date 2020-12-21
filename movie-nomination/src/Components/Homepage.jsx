@@ -18,7 +18,7 @@ function Card(props, recall, type, nomList) {
     var nominated = listOfimdbID.includes(props.imdbID) ? <div className='nominated-typo'>Nominated</div> : "Nominate";
     if (props.Poster === "N/A")
         return (
-            <div className="col-2">
+            <div className="col-3">
                 <FadeIn>
                     <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
                         <div className="card-body">
@@ -34,9 +34,9 @@ function Card(props, recall, type, nomList) {
             </div>
         )
     return (
-        <div className="col-2">
+        <div className="col-3">
             <FadeIn>
-                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style={{ backgroundImage: `url(${props.Poster})` }}>
+                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style={{ backgroundImage: `url(${props.Poster})`, backgroundSize: 'cover',backgroundRepeat: 'no-repeat'}}>
                     <div className={type === "nominate" ? "content" : "remove-nominate"}>
                         <div class="text">
                             {props.Title}<br />
@@ -56,7 +56,7 @@ export default function Homepage() {
     const [nominatedList, setNominatedList] = useState(JSON.parse(localStorage.getItem("nominatedList")) || []);
     const [prevQuery, setPrevQuery] = useState(null);
     const [dataCount, setDataCount] = useState(0);
-    const pageLimit = 6;
+    const pageLimit = 4;
     const [pageIndex, setPageIndex] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentData, setCurrentData] = useState([]);
