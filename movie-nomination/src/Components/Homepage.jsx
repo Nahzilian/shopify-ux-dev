@@ -14,7 +14,8 @@ function Card(props, recall, type, nomList) {
     } else {
         paramCall = props.imdbID
     }
-    var nominated = nomList.includes(props) ? "Nominated" : "Nominate";
+    var listOfimdbID = nomList.map(x => x.imdbID);
+    var nominated = listOfimdbID.includes(props.imdbID) ? <div className = 'nominated-typo'>Nominated</div> : "Nominate";
     if (props.Poster === "N/A")
         return (
             <div className="col-6">
@@ -23,7 +24,7 @@ function Card(props, recall, type, nomList) {
                         <div className="card-body">
                             <h5 className="card-title">{props.Title} - ({props.Year})</h5>
                         </div>
-                        <div className="content">
+                        <div className={type === "nominate" ? "content" : "remove-nominate"}>
                             <div class="text">
                                 {type === "nominate" ? nominated : "Remove"}
                             </div>
@@ -36,7 +37,7 @@ function Card(props, recall, type, nomList) {
         <div className="col-6">
             <FadeIn>
                 <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style = {{backgroundImage:`url(${props.Poster})`}}>
-                    <div className="content">
+                    <div className={type === "nominate" ? "content" : "remove-nominate"}>
                         <div class="text">
                             {props.Title}<br />
                         ({props.Year})<br />

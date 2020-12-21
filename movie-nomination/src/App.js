@@ -4,11 +4,9 @@ import Homepage from './Components/Homepage';
 
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <Route path = '/' component = {Homepage}/>
-      </Router>
-    </div>
+    <Router>
+      <Route path='/' component={Homepage} />
+    </Router>
   );
 }
 
