@@ -179,7 +179,9 @@ export default function Homepage() {
                 <br />
                 <div className="col">
                     <div className="row search-box">
-                        <h1>The Shoppies</h1>
+                        <div className = "title underline">
+                            <h1>The Shoppies</h1>
+                        </div>
                         <br />
                         <form onSubmit={submitHandler}>
                             <lable><strong>Movie title</strong></lable>
@@ -221,18 +223,28 @@ export default function Homepage() {
                                             selectedPageIndex.map(x => <div className="page-index" onClick={() => changeSelectedPage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
                                     </div>
                                     {currentSelectedData.length > 0 ? <div className="row">{currentSelectedData.map(x => Card(x, removeNominate, "remove", nominatedList))}</div> :
-                                        <div>
-                                            <EmptyClip />
+                                        <div className = "col empty-clip">
+                                            <div className = "clip-board">
+                                                <EmptyClip />
+                                                <p>Huh, your nomination list looks empty...</p>
+                                            </div>
                                         </div>}
                                 </div>
                             </div>
                         </div> :
-                        <div className="search-wrapper row">
+                        <div className="main-page row">
                             <div className="col-6">
                                 <Award />
                             </div>
                             <div className="col-6">
-                                <h1>Time for some query</h1>
+                                <h2 className = "title underline">Movie nominations</h2>
+                                <br/>
+                                <p>Love watching movies? Want to nominate your favorite movies? The Shoppies's movie nomination a solution for you!</p>
+                                <ul>
+                                    <li>Can't keep track of your nominees? We got you covered!</li>
+                                    <li>Look up for your favorite movies within seconds!</li>
+                                    <li>Save your nominees for future reference!</li>
+                                </ul>
                             </div>
                         </div>
 
