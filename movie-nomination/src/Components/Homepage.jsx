@@ -6,6 +6,10 @@ import { ReactComponent as EmptyClip } from './assets/clip.svg'
 import { ReactComponent as Typing } from './assets/typing.svg'
 const baseAPI = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=`
 
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
 function Card(props, recall, type, nomList) {
     var paramCall;
     if (type === "nominate") {
@@ -14,8 +18,8 @@ function Card(props, recall, type, nomList) {
         paramCall = props.imdbID
     }
     const imgStyle = {
-        backgroundImage: `url(${props.Poster})`, 
-        backgroundSize: 'cover', 
+        backgroundImage: `url(${props.Poster})`,
+        backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
     }
     var listOfimdbID = nomList.map(x => x.imdbID);
@@ -29,7 +33,7 @@ function Card(props, recall, type, nomList) {
                             <p className="card-title">{props.Title} - ({props.Year})</p>
                         </div>
                         <div className={type === "nominate" ? "content" : "remove-nominate"}>
-                            <div class="text">
+                            <div className="text">
                                 {type === "nominate" ? nominated : "Remove"}
                             </div>
                         </div>
@@ -45,7 +49,7 @@ function Card(props, recall, type, nomList) {
                         <p className="card-title">{props.Title} - ({props.Year})</p>
                     </div>
                     <div className={type === "nominate" ? "content" : "remove-nominate"}>
-                        <div class="text">
+                        <div className="text">
                             {type === "nominate" ? nominated : "Remove"}
                         </div>
                     </div>
@@ -57,10 +61,12 @@ function Card(props, recall, type, nomList) {
 
 export default function Homepage() {
     const [userQuery, setUserQuery] = useState(null);
+    const [originalData, setOriginalData] = useState([]);
     const [data, setQueryData] = useState(null);
     const [nominatedList, setNominatedList] = useState(JSON.parse(localStorage.getItem("nominatedList")) || []);
     const [prevQuery, setPrevQuery] = useState(null);
     const [dataCount, setDataCount] = useState(0);
+    const [listOfYears, setListOfYears] = useState([]);
     const pageLimit = 4;
     const [pageIndex, setPageIndex] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -139,20 +145,23 @@ export default function Homepage() {
     const apiCall = (query) => {
         axios.get(baseAPI + query)
             .then((res) => {
+                setOriginalData(res.data.Search);
                 const len = res.data.Search.length
                 setDataCount(len);
                 var maxPage = Math.floor(len / pageLimit) + 2;
                 var temp = []
                 var indexData = []
-
+                var yearList = res.data.Search.map(x => x.Year).filter(onlyUnique);
+                yearList.sort();
                 for (var i = 1; i < maxPage; i++) {
                     temp.push(i);
                     indexData.push(res.data.Search.slice((i - 1) * pageLimit, i * pageLimit));
                 }
                 setPageIndex(temp);
-                setQueryData(indexData)
-                setCurrentData(indexData[0])
-                setIsSearched(true)
+                setQueryData(indexData);
+                setCurrentData(indexData[0]);
+                setIsSearched(true);
+                setListOfYears(yearList)
             }).catch((err) => console.error(err))
     }
 
@@ -177,6 +186,23 @@ export default function Homepage() {
     const changePage = (index) => {
         setCurrentPage(index);
         setCurrentData(data[index - 1]);
+    }
+
+    const filterDataByYear = (year) => {
+        var filteredList = originalData.filter(movie => movie.Year === year);
+        var len = filteredList.length;
+        setDataCount(len);
+        var maxPage = Math.floor(len / pageLimit) + 2;
+        var temp = []
+        var indexData = []
+        for (var i = 1; i < maxPage; i++) {
+            temp.push(i);
+            indexData.push(filteredList.slice((i - 1) * pageLimit, i * pageLimit));
+        }
+        setPageIndex(temp);
+        setQueryData(indexData);
+        setCurrentData(indexData[0]);
+        setIsSearched(true);
     }
     return (
         <FadeIn>
@@ -208,7 +234,27 @@ export default function Homepage() {
                 {isSearched ?
                     <div>
                         <div className="result-wrapper row">
-                            {prevQuery ? <div className="col-12"><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div> : null}
+                            {prevQuery ?
+                                <div className="col-12">
+                                    <div className="row">
+                                        <div className="col-10"><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div>
+                                        <div className="col-2">
+                                            <div className="dropdown">
+                                                <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Filter by year
+                                                </button>
+                                                {listOfYears.length > 0 ?
+                                                    <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        {listOfYears.map(x => <a className="dropdown-item" href="#" onClick={()=>filterDataByYear(x)}>{x}</a>)}
+                                                    </div> :
+                                                    <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        <a className="dropdown-item" href="#">No record found!</a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> : null}
                             <div className="paging col-12">
                                 {pageIndex.length > 0 ?
                                     pageIndex.map(x => <div className="page-index" onClick={() => changePage(x)}>{parseInt(x) === parseInt(currentPage) ? <u className="selected">{x}</u> : x}</div>) : null}
