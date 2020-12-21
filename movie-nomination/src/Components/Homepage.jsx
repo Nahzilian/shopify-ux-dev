@@ -35,8 +35,7 @@ function Card(props, recall, type, nomList) {
     return (
         <div className="col-6">
             <FadeIn>
-                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
-                    <img className="card-img-top" src={props.Poster} alt="Movie poster" />
+                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style = {{backgroundImage:`url(${props.Poster})`}}>
                     <div className="content">
                         <div class="text">
                             {props.Title}<br />
@@ -213,7 +212,12 @@ export default function Homepage() {
                                                 pageIndex.map(x => <div className="page-index" onClick={() => changePage(x)}>{parseInt(x) === parseInt(currentPage) ? <u className="selected">{x}</u> : x}</div>) : null}
                                         </div>
                                         {currentData.length > 0 ? <div className="row">{currentData.map(x => Card(x, nominate, "nominate", nominatedList))}</div> :
-                                            <div><Typing /></div>}
+                                            <div className = "col typing">
+                                                <div className = "typing-svg">
+                                                    <Typing />
+                                                    <p>Looking for movies!</p>
+                                                </div>
+                                            </div>}
                                     </div>
                                 </div>
                                 <div className="col-6 result-wrapper">
