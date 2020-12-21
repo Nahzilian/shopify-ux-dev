@@ -306,3 +306,9 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: #333; width
   justify-content: center;
   align-items: center;
 }
+
+@media only screen and (max-width: 991px) {
+  .award {
+    display: none;
+  }
+}

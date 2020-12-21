@@ -4,6 +4,7 @@ import FadeIn from 'react-fade-in'
 import { ReactComponent as Award } from './assets/award.svg'
 import { ReactComponent as EmptyClip } from './assets/clip.svg'
 import { ReactComponent as Typing } from './assets/typing.svg'
+
 const baseAPI = `https://www.omdbapi.com/?apikey=9beeb635&s=`
 
 function onlyUnique(value, index, self) {
@@ -174,8 +175,6 @@ export default function Homepage() {
         if (userQuery && !(userQuery === "")) {
             apiCall(queryFormat(userQuery))
             setPrevQuery(userQuery)
-        } else {
-
         }
     }
 
@@ -210,7 +209,6 @@ export default function Homepage() {
         setQueryData(indexData);
         setCurrentData(indexData[0]);
         setIsSearched(true);
-        
     }
     return (
         <FadeIn>
@@ -218,7 +216,7 @@ export default function Homepage() {
                 <br />
                 <div className="row search-box">
                     <div className="title underline">
-                        <h1>The Shoppies movie nomination</h1>
+                        <h1>The Shoppies: Movie awards for entrepreneurs</h1>
                     </div>
                     <br />
                     <form onSubmit={submitHandler}>
@@ -303,10 +301,10 @@ export default function Homepage() {
                     </div>
                     :
                     <div className="main-page row">
-                        <div className="col-6">
+                        <div className="col-6 award">
                             <Award />
                         </div>
-                        <div className="col-6 landing-context">
+                        <div className="col-12  col-sm-12 col-md-12 col-lg-6 col-xl-6  landing-context">
 
                             <h2 className="title underline">Movie nominations</h2>
                             <br />
