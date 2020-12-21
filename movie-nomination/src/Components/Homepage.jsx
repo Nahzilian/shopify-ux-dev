@@ -26,7 +26,7 @@ function Card(props, recall, type, nomList) {
     var nominated = listOfimdbID.includes(props.imdbID) ? <div className='nominated-typo'>Nominated</div> : "Choose";
     if (props.Poster === "N/A")
         return (
-            <div className="col-3">
+            <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
                 <FadeIn>
                     <div className="card" onClick={() => recall(paramCall)}>
                         <div className="card-body">
@@ -42,7 +42,7 @@ function Card(props, recall, type, nomList) {
             </div>
         )
     return (
-        <div className="col-3">
+        <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <FadeIn>
                 <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style={imgStyle}>
                     <div className="card-body">
@@ -216,13 +216,13 @@ export default function Homepage() {
                     <form onSubmit={submitHandler}>
                         <lable><strong>Movie title</strong></lable>
                         <div className="row">
-                            <div className="col-10">
+                            <div className="col-xl-10 col-lg-10 col-md-8">
                                 <input className="effect-9" type="text" placeholder="Looking for movies ..." onChange={(e) => onChangeHandler(e)} />
                                 <span className="focus-border">
                                     <i></i>
                                 </span>
                             </div>
-                            <div className="col-2">
+                            <div className="col-xl-2 col-lg-2 col-md-4">
                                 <button className="btn btn-info" type="submit">
                                     <span><i className="fas fa-search"></i> Search</span>
                                 </button>
@@ -237,8 +237,8 @@ export default function Homepage() {
                             {prevQuery ?
                                 <div className="col-12">
                                     <div className="row">
-                                        <div className="col-10"><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div>
-                                        <div className="col-2">
+                                        <div className="col-xl-10 col-lg-8 col-md-8"><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div>
+                                        <div className="col-xl-2 col-lg-4 col-md-4">
                                             <div className="dropdown">
                                                 <button className="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Filter by year
