@@ -75,7 +75,7 @@ export default function Homepage() {
     const [currentSelectedData, setCurSelectedData] = useState(JSON.parse(localStorage.getItem("currentSelectedData")) || []);
     const [selectedPageIndex, setSelectedPageIndex] = useState(JSON.parse(localStorage.getItem("selectedPageIndex")) || [1]);
     const [isSearched, setIsSearched] = useState(false);
-
+    const [selectedYear, setSelectedYear] = useState(null);
     window.onbeforeunload = () => {
         localStorage.setItem("currentSelectedData", JSON.stringify(currentSelectedData));
         localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
@@ -189,7 +189,14 @@ export default function Homepage() {
     }
 
     const filterDataByYear = (year) => {
-        var filteredList = originalData.filter(movie => movie.Year === year);
+        var filteredList;
+        if(year === "Years"){
+            setSelectedYear("All records");
+            filteredList = originalData;
+        }else{
+            setSelectedYear(year);
+            filteredList = originalData.filter(movie => movie.Year === year);
+        }
         var len = filteredList.length;
         setDataCount(len);
         var maxPage = Math.floor(len / pageLimit) + 2;
@@ -203,6 +210,7 @@ export default function Homepage() {
         setQueryData(indexData);
         setCurrentData(indexData[0]);
         setIsSearched(true);
+        
     }
     return (
         <FadeIn>
@@ -241,11 +249,16 @@ export default function Homepage() {
                                         <div className="col-xl-2 col-lg-4 col-md-4">
                                             <div className="dropdown">
                                                 <button className="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Filter by year
+                                                    {selectedYear|| "Filter by year"}
                                                 </button>
                                                 {listOfYears.length > 0 ?
                                                     <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        {listOfYears.map(x => <a className="dropdown-item" href="#" onClick={() => filterDataByYear(x)}>{x}</a>)}
+                                                        <a className="dropdown-item" href="#" onClick={() => filterDataByYear("Years")}>All recorded years</a>
+                                                        {listOfYears.map(x => 
+                                                        selectedYear === x?
+                                                        <a className="dropdown-item active" href="#" onClick={() => filterDataByYear(x)}>{x}</a>:
+                                                        <a className="dropdown-item" href="#" onClick={() => filterDataByYear(x)}>{x}</a>)
+                                                    }
                                                     </div> :
                                                     <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <a className="dropdown-item" href="#">No record found!</a>
@@ -267,7 +280,6 @@ export default function Homepage() {
                                         <p>Looking for movies!</p>
                                     </div>
                                 </div>}
-
                         </div>
                         <br />
                         <div className="result-wrapper row">
