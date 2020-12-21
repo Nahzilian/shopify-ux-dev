@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import FadeIn from 'react-fade-in'
 import { ReactComponent as Award } from './assets/award.svg'
@@ -15,14 +15,14 @@ function Card(props, recall, type, nomList) {
         paramCall = props.imdbID
     }
     var listOfimdbID = nomList.map(x => x.imdbID);
-    var nominated = listOfimdbID.includes(props.imdbID) ? <div className = 'nominated-typo'>Nominated</div> : "Nominate";
+    var nominated = listOfimdbID.includes(props.imdbID) ? <div className='nominated-typo'>Nominated</div> : "Nominate";
     if (props.Poster === "N/A")
         return (
-            <div className="col-6">
+            <div className="col-2">
                 <FadeIn>
                     <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
                         <div className="card-body">
-                            <h5 className="card-title">{props.Title} - ({props.Year})</h5>
+                            <p className="card-title">{props.Title} - ({props.Year})</p>
                         </div>
                         <div className={type === "nominate" ? "content" : "remove-nominate"}>
                             <div class="text">
@@ -34,9 +34,9 @@ function Card(props, recall, type, nomList) {
             </div>
         )
     return (
-        <div className="col-6">
+        <div className="col-2">
             <FadeIn>
-                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style = {{backgroundImage:`url(${props.Poster})`}}>
+                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style={{ backgroundImage: `url(${props.Poster})` }}>
                     <div className={type === "nominate" ? "content" : "remove-nominate"}>
                         <div class="text">
                             {props.Title}<br />
@@ -64,7 +64,7 @@ export default function Homepage() {
     const [currentSelectedData, setCurSelectedData] = useState(JSON.parse(localStorage.getItem("currentSelectedData")) || []);
     const [selectedPageIndex, setSelectedPageIndex] = useState(JSON.parse(localStorage.getItem("selectedPageIndex")) || [1]);
     const [isSearched, setIsSearched] = useState(false);
-    
+
     window.onbeforeunload = () => {
         localStorage.setItem("currentSelectedData", JSON.stringify(currentSelectedData));
         localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
@@ -72,10 +72,10 @@ export default function Homepage() {
         localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
     }
     useEffect(() => {
-        if(nominatedList.length > 0){
+        if (nominatedList.length > 0) {
             setIsSearched(true);
         }
-    },[])
+    }, [nominatedList.length])
     const nominate = (data) => {
         var compareElement = data.imdbID;
         var listOfimdbID = nominatedList.map(x => x.imdbID);
@@ -174,88 +174,88 @@ export default function Homepage() {
         setCurrentData(data[index - 1]);
     }
     return (
-        <div className="container">
-            <FadeIn>
+        <FadeIn>
+            <div className="container">
                 <br />
-                <div className="col">
-                    <div className="row search-box">
-                        <div className = "title underline">
-                            <h1>The Shoppies</h1>
+                <div className="row search-box">
+                    <div className="title underline">
+                        <h1>The Shoppies movie nomination</h1>
+                    </div>
+                    <br />
+                    <form onSubmit={submitHandler}>
+                        <lable><strong>Movie title</strong></lable>
+                        <div className="row">
+                            <div className="col-10">
+                                <input className="effect-9" type="text" placeholder="Looking for movies ..." onChange={(e) => onChangeHandler(e)} />
+                                <span className="focus-border">
+                                    <i></i>
+                                </span>
+                            </div>
+                            <div className="col-2">
+                                <button className="btn btn-info" type="submit">
+                                    <span><i className="fas fa-search"></i> Search</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <br />
+                {isSearched ?
+                    <div>
+                        <div className="result-wrapper row">
+                            {prevQuery ? <div className="col-12"><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div> : null}
+                            <div className="paging col-12">
+                                {pageIndex.length > 0 ?
+                                    pageIndex.map(x => <div className="page-index" onClick={() => changePage(x)}>{parseInt(x) === parseInt(currentPage) ? <u className="selected">{x}</u> : x}</div>) : null}
+                            </div>
+                            {currentData.length > 0 ?
+                                <div className="col-12"><div className="row">{currentData.map(x => Card(x, nominate, "nominate", nominatedList))}</div></div> :
+                                <div className="col-12 typing">
+                                    <div className="typing-svg">
+                                        <Typing />
+                                        <p>Looking for movies!</p>
+                                    </div>
+                                </div>}
+
                         </div>
                         <br />
-                        <form onSubmit={submitHandler}>
-                            <lable><strong>Movie title</strong></lable>
-                            <div className="row">
-                                <div className="col-10">
-                                    <input className="effect-9" type="text" placeholder="Look for movie ..." onChange={(e) => onChangeHandler(e)} />
-                                    <span className="focus-border">
-                                        <i></i>
-                                    </span>
-                                </div>
-                                <div className="col-2">
-                                    <button className="btn btn-info" type="submit">
-                                        <span><i className="fas fa-search"></i> Search</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <br />
-                    {isSearched ?
-                        <div className="search-wrapper row">
-                            <div className="row">
-                                <div className="col-6 left-board">
-                                    {prevQuery ? <div><h4>Found {dataCount} results for <strong>"{prevQuery}"</strong></h4></div> : null}
-                                    <div className="results">
-                                        <div className="paging">
-                                            {pageIndex.length > 0 ?
-                                                pageIndex.map(x => <div className="page-index" onClick={() => changePage(x)}>{parseInt(x) === parseInt(currentPage) ? <u className="selected">{x}</u> : x}</div>) : null}
-                                        </div>
-                                        {currentData.length > 0 ? <div className="row">{currentData.map(x => Card(x, nominate, "nominate", nominatedList))}</div> :
-                                            <div className = "col typing">
-                                                <div className = "typing-svg">
-                                                    <Typing />
-                                                    <p>Looking for movies!</p>
-                                                </div>
-                                            </div>}
-                                    </div>
-                                </div>
-                                <div className="col-6 result-wrapper">
-                                    <div><h4>Nominations</h4></div>
-                                    <div className="paging">
+                        <div className="result-wrapper row">
+                            {currentSelectedData.length > 0 ?
+                                <div>
+                                    <div className="col-12"><h4>My nomination list</h4></div>
+                                    <div className="paging col-12">
                                         {selectedPageIndex.length > 0 ?
                                             selectedPageIndex.map(x => <div className="page-index" onClick={() => changeSelectedPage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
                                     </div>
-                                    {currentSelectedData.length > 0 ? <div className="row">{currentSelectedData.map(x => Card(x, removeNominate, "remove", nominatedList))}</div> :
-                                        <div className = "col empty-clip">
-                                            <div className = "clip-board">
-                                                <EmptyClip />
-                                                <p>Huh, your nomination list looks empty...</p>
-                                            </div>
-                                        </div>}
-                                </div>
-                            </div>
-                        </div> :
-                        <div className="main-page row">
-                            <div className="col-6">
-                                <Award />
-                            </div>
-                            <div className="col-6">
-                                <h2 className = "title underline">Movie nominations</h2>
-                                <br/>
-                                <p>Love watching movies? Want to nominate your favorite movies? The Shoppies's movie nomination a solution for you!</p>
-                                <ul>
-                                    <li>Can't keep track of your nominees? We got you covered!</li>
-                                    <li>Look up for your favorite movies within seconds!</li>
-                                    <li>Save your nominees for future reference!</li>
-                                </ul>
-                            </div>
+                                </div> : null}
+                            {currentSelectedData.length > 0 ?
+                                <div className="col-12"><div className="row">{currentSelectedData.map(x => Card(x, removeNominate, "remove", nominatedList))}</div></div> :
+                                <div className="col-12 empty-clip">
+                                    <div className="clip-board">
+                                        <EmptyClip />
+                                        <p>Huh, your nomination list looks empty...</p>
+                                    </div>
+                                </div>}
                         </div>
-
-                    }
-                </div>
-            </FadeIn>
-        </div>
+                    </div>
+                    :
+                    <div className="main-page row">
+                        <div className="col-6">
+                            <Award />
+                        </div>
+                        <div className="col-6">
+                            <h2 className="title underline">Movie nominations</h2>
+                            <br />
+                            <p>Love watching movies? Want to nominate your favourite film? The Shoppies movie nomination a solution for you!</p>
+                            <ul>
+                                <li>Can't keep track of your nominees? We got you covered!</li>
+                                <li>Look up for your favorite movies within seconds!</li>
+                                <li>Save your nominees for future reference!</li>
+                            </ul>
+                        </div>
+                    </div>}
+                <br />
+            </div >
+        </FadeIn>
     )
 }
