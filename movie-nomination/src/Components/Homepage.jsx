@@ -6,7 +6,6 @@ import { ReactComponent as EmptyClip } from './assets/clip.svg'
 import { ReactComponent as Typing } from './assets/typing.svg'
 const baseAPI = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=`
 
-
 function Card(props, recall, type, nomList) {
     var paramCall;
     if (type === "nominate") {
@@ -14,13 +13,18 @@ function Card(props, recall, type, nomList) {
     } else {
         paramCall = props.imdbID
     }
+    const imgStyle = {
+        backgroundImage: `url(${props.Poster})`, 
+        backgroundSize: 'cover', 
+        backgroundRepeat: 'no-repeat',
+    }
     var listOfimdbID = nomList.map(x => x.imdbID);
-    var nominated = listOfimdbID.includes(props.imdbID) ? <div className='nominated-typo'>Nominated</div> : "Nominate";
+    var nominated = listOfimdbID.includes(props.imdbID) ? <div className='nominated-typo'>Nominated</div> : "Choose";
     if (props.Poster === "N/A")
         return (
             <div className="col-3">
                 <FadeIn>
-                    <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
+                    <div className="card" onClick={() => recall(paramCall)}>
                         <div className="card-body">
                             <p className="card-title">{props.Title} - ({props.Year})</p>
                         </div>
@@ -36,11 +40,12 @@ function Card(props, recall, type, nomList) {
     return (
         <div className="col-3">
             <FadeIn>
-                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style={{ backgroundImage: `url(${props.Poster})`, backgroundSize: 'cover',backgroundRepeat: 'no-repeat'}}>
+                <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)} style={imgStyle}>
+                    <div className="card-body">
+                        <p className="card-title">{props.Title} - ({props.Year})</p>
+                    </div>
                     <div className={type === "nominate" ? "content" : "remove-nominate"}>
                         <div class="text">
-                            {props.Title}<br />
-                        ({props.Year})<br />
                             {type === "nominate" ? nominated : "Remove"}
                         </div>
                     </div>
