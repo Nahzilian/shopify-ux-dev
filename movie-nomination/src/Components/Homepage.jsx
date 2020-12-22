@@ -4,13 +4,28 @@ import FadeIn from 'react-fade-in'
 import { ReactComponent as Award } from './assets/award.svg'
 import { ReactComponent as EmptyClip } from './assets/clip.svg'
 import { ReactComponent as Typing } from './assets/typing.svg'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
-const baseAPI = `https://www.omdbapi.com/?apikey=9beeb635&s=`
+/*
+* Since the code is hosted on github, hence, I put the apikey directly here.
+* However, it would normally be stored in .env file
+*/
+const baseAPI = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=`
 
+/* Function for checking unique items in a list */
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
 
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+/* 
+* Card component to display information about the movies (i.e. Title, year, poster/image) 
+* - Depends on the mapping on the items, the display is based on the type of object (if the item is in nominated list or not)
+* Since imdbID will always be unique, it will be used to check the availability within a list
+*/
 function Card(props, recall, type, nomList) {
     var paramCall;
     if (type === "nominate") {
@@ -29,7 +44,7 @@ function Card(props, recall, type, nomList) {
         return (
             <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
                 <FadeIn>
-                    <div className="card" onClick={() => recall(paramCall)}>
+                    <div className="card text-white bg-dark mb-3" onClick={() => recall(paramCall)}>
                         <div className="card-body">
                             <p className="card-title">{props.Title} - ({props.Year})</p>
                         </div>
@@ -60,7 +75,14 @@ function Card(props, recall, type, nomList) {
     )
 }
 
+/* 
+* Homepage function
+*/
 export default function Homepage() {
+    /* 
+    * All hooks for storing/representing/displaying data
+    */
+    const [open, setOpen] = useState(false);
     const [userQuery, setUserQuery] = useState(null);
     const [originalData, setOriginalData] = useState([]);
     const [data, setQueryData] = useState(null);
@@ -77,17 +99,49 @@ export default function Homepage() {
     const [selectedPageIndex, setSelectedPageIndex] = useState(JSON.parse(localStorage.getItem("selectedPageIndex")) || [1]);
     const [isSearched, setIsSearched] = useState(false);
     const [selectedYear, setSelectedYear] = useState(null);
+    const [stateMessage, setStateMsg] = useState(JSON.parse(localStorage.getItem("nominatedList")).length > 0 ? 1 : 0);
+    /* 
+    * Before unload the page/ close the page, it will store the data to the localStorage
+    */
     window.onbeforeunload = () => {
         localStorage.setItem("currentSelectedData", JSON.stringify(currentSelectedData));
         localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
         localStorage.setItem("nominatedList", JSON.stringify(nominatedList));
         localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
     }
+    window.onload = () => {
+        if (stateMessage === 1) {
+            handleClick()
+        }
+    }
     useEffect(() => {
         if (nominatedList.length > 0) {
             setIsSearched(true);
         }
+
     }, [nominatedList.length])
+
+    const handleClick = () => {
+        setOpen(true);
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+
+    const saveAllData = () => {
+        localStorage.setItem("currentSelectedData", JSON.stringify(currentSelectedData));
+        localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
+        localStorage.setItem("nominatedList", JSON.stringify(nominatedList));
+        localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
+
+        handleClick();
+    }
+
     const nominate = (data) => {
         var compareElement = data.imdbID;
         var listOfimdbID = nominatedList.map(x => x.imdbID);
@@ -109,7 +163,7 @@ export default function Homepage() {
             }
             setNominatedList(temp);
             setCurSelectedData(temp.slice((index - 1) * pageLimit, index * pageLimit));
-            setCurSelectedPage(index)
+            setCurSelectedPage(index);
         }
     }
     const removeNominate = (imdbID) => {
@@ -144,26 +198,45 @@ export default function Homepage() {
     }
 
     const apiCall = (query) => {
-        axios.get(baseAPI + query)
+        var reformat = queryFormat(query)
+        axios.get(baseAPI + reformat)
             .then((res) => {
-                setOriginalData(res.data.Search);
-                const len = res.data.Search.length
-                setDataCount(len);
-                var maxPage = Math.floor(len / pageLimit) + 2;
-                var temp = []
-                var indexData = []
-                var yearList = res.data.Search.map(x => x.Year).filter(onlyUnique);
-                yearList.sort();
-                for (var i = 1; i < maxPage; i++) {
-                    temp.push(i);
-                    indexData.push(res.data.Search.slice((i - 1) * pageLimit, i * pageLimit));
+                try {
+                    if (res.data.Error) {
+                        handleClick();
+                        setStateMsg(0);
+                    } else {
+                        setOriginalData(res.data.Search);
+                        const len = res.data.Search.length
+                        setDataCount(len);
+                        var maxPage = Math.floor(len / pageLimit) + 2;
+                        var temp = []
+                        var indexData = []
+                        var yearList = res.data.Search.map(x => x.Year).filter(onlyUnique);
+                        yearList.sort();
+                        for (var i = 1; i < maxPage; i++) {
+                            temp.push(i);
+                            indexData.push(res.data.Search.slice((i - 1) * pageLimit, i * pageLimit));
+                        }
+                        setPageIndex(temp);
+                        setQueryData(indexData);
+                        setCurrentData(indexData[0]);
+                        setIsSearched(true);
+                        setListOfYears(yearList)
+                        setPrevQuery(query);
+                        setCurrentPage(1);
+                    }
                 }
-                setPageIndex(temp);
-                setQueryData(indexData);
-                setCurrentData(indexData[0]);
-                setIsSearched(true);
-                setListOfYears(yearList)
-            }).catch((err) => console.error(err))
+                catch (err) {
+                    console.error(err);
+                    handleClick();
+                    setStateMsg(0);
+                }
+            }).catch((err) => {
+                console.error(err);
+                handleClick();
+                setStateMsg(0);
+            })
     }
 
     const queryFormat = (query) => {
@@ -173,8 +246,7 @@ export default function Homepage() {
     const submitHandler = (e) => {
         e.preventDefault();
         if (userQuery && !(userQuery === "")) {
-            apiCall(queryFormat(userQuery))
-            setPrevQuery(userQuery)
+            apiCall(userQuery)
         }
     }
 
@@ -189,10 +261,10 @@ export default function Homepage() {
 
     const filterDataByYear = (year) => {
         var filteredList;
-        if(year === "Years"){
+        if (year === "Years") {
             setSelectedYear("All records");
             filteredList = originalData;
-        }else{
+        } else {
             setSelectedYear(year);
             filteredList = originalData.filter(movie => movie.Year === year);
         }
@@ -220,10 +292,10 @@ export default function Homepage() {
                     </div>
                     <br />
                     <form onSubmit={submitHandler}>
-                        <lable><strong>Movie title</strong></lable>
+                        <label><strong>Movie title</strong></label>
                         <div className="row">
                             <div className="col-xl-10 col-lg-10 col-md-8">
-                                <input className="effect-9" type="text" placeholder="Looking for movies ..." onChange={(e) => onChangeHandler(e)} />
+                                <input className="input-effect" type="text" placeholder="Looking for movies ..." onChange={(e) => onChangeHandler(e)} />
                                 <span className="focus-border">
                                     <i></i>
                                 </span>
@@ -247,16 +319,16 @@ export default function Homepage() {
                                         <div className="col-xl-2 col-lg-4 col-md-4">
                                             <div className="dropdown">
                                                 <button className="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    {selectedYear|| "Filter by year"}
+                                                    {selectedYear || "Filter by year"}
                                                 </button>
                                                 {listOfYears.length > 0 ?
                                                     <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <a className="dropdown-item" href="#" onClick={() => filterDataByYear("Years")}>All recorded years</a>
-                                                        {listOfYears.map(x => 
-                                                        selectedYear === x?
-                                                        <a className="dropdown-item active" href="#" onClick={() => filterDataByYear(x)}>{x}</a>:
-                                                        <a className="dropdown-item" href="#" onClick={() => filterDataByYear(x)}>{x}</a>)
-                                                    }
+                                                        {listOfYears.map(x =>
+                                                            selectedYear === x ?
+                                                                <a className="dropdown-item active" href="#" onClick={() => filterDataByYear(x)}>{x}</a> :
+                                                                <a className="dropdown-item" href="#" onClick={() => filterDataByYear(x)}>{x}</a>)
+                                                        }
                                                     </div> :
                                                     <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <a className="dropdown-item" href="#">No record found!</a>
@@ -282,11 +354,24 @@ export default function Homepage() {
                         <br />
                         <div className="result-wrapper row">
                             {currentSelectedData.length > 0 ?
-                                <div>
-                                    <div className="col-12"><h4>My nomination list</h4></div>
-                                    <div className="paging col-12">
-                                        {selectedPageIndex.length > 0 ?
-                                            selectedPageIndex.map(x => <div className="page-index" onClick={() => changeSelectedPage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
+                                <div className="col-12">
+                                    <div className="row">
+                                        <div className="col-12">
+                                            <div className="row">
+                                                <div className="col-xl-10 col-lg-8 col-md-8">
+                                                    <h4>My nomination list (<span style = {{color:"red"}}>{nominatedList.length}</span> nominees)</h4>
+                                                </div>
+                                                <div className="col-xl-2 col-lg-4 col-md-4">
+                                                    <button className="btn btn-info" onClick={() => saveAllData()}>
+                                                        <span><i class="far fa-save"></i> Save</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="paging col-12">
+                                            {selectedPageIndex.length > 0 ?
+                                                selectedPageIndex.map(x => <div className="page-index" onClick={() => changeSelectedPage(x)}>{parseInt(x) === parseInt(currentSelectedPage) ? <u className="selected">{x}</u> : x}</div>) : null}
+                                        </div>
                                     </div>
                                 </div> : null}
                             {currentSelectedData.length > 0 ?
@@ -305,7 +390,6 @@ export default function Homepage() {
                             <Award />
                         </div>
                         <div className="col-12  col-sm-12 col-md-12 col-lg-6 col-xl-6  landing-context">
-
                             <h2 className="title underline">Movie nominations</h2>
                             <br />
                             <p>Love watching movies? Want to nominate your favourite film? The Shoppies movie nomination a solution for you!</p>
@@ -314,11 +398,20 @@ export default function Homepage() {
                                 <li>Look up for your favorite movies within seconds!</li>
                                 <li>Save your nominees for future reference!</li>
                             </ul>
-
                         </div>
                     </div>}
                 <br />
             </div >
+            <Snackbar open={open}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                autoHideDuration={5000}
+                onClose={handleClose}
+            >
+                <Alert severity={stateMessage === 0 ? "error" : "info"} onClose={handleClose}>
+                    {stateMessage === 0 ? "Something went wrong, please try again later!" :
+                        "Phew, your nomination list is safe with us "}
+                </Alert>
+            </Snackbar>
         </FadeIn>
     )
 }

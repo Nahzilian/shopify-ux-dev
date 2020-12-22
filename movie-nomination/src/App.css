@@ -1,8 +1,12 @@
+/* Import font from google fonts*/
+
 @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
+/* No focus outline */
 :focus{outline: none;}
 
+/* Tag styling setup */
 html, body {
   margin: 0; 
   padding: 0;
@@ -19,14 +23,16 @@ p {
   font-family: 'Varela Round', sans-serif;
 }
 
-form, .btn{
+form, .btn, .title {
   width: 100%;
 }
 
 input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: #333; width: 100%; box-sizing: border-box; letter-spacing: 1px;background-color: inherit;}
 
-.effect-9{border: 1px solid #ccc; padding: 7px 14px 9px; transition: 0.4s;}
+/* Custom styling for input box */
+.input-effect{border: 1px solid #ccc; padding: 7px 14px 9px; transition: 0.4s;}
 
+/* Custom underline for title, etc .. */
 .underline{
   margin-bottom:10px;
   padding-bottom:10px;
@@ -37,17 +43,20 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: #333; width
   background-size: 100% 3px;
 }
 
+/* Special font for title class */
 .title {
-  width: 100%;
   font-family: 'Lobster', cursive;
 }
 
+/* Search box class styling */
 .search-box{
   padding:30px;
   background-color: white;
   border-radius: 10px;
 }
 
+
+/* Cards class styling */
 .card{
   box-shadow: 6px 8px 6px -2px rgba(126, 126, 126, 0.69);
   border: none;
@@ -79,33 +88,9 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: #333; width
   cursor: pointer;
 }
 
-
 .card:hover .card-body{
   z-index: 0;
 }
-
-.paging{
-  display:flex;
-  padding: 10px 0 10px 0;
-}
-.selected{
-  color:red;
-  font-weight: bold;
-}
-.page-index{
-  flex-flow: row wrap;
-  font-size: 15px;
-  margin: 0 10px;
-  cursor: pointer;
-}
-/*---- wrapper ----*/
-.main-page, .result-wrapper{
-  background-color: white;
-  border-radius: 10px;
-  padding:30px;
-}
-
-/*---- wrapper ----*/
 
 .remove-nominate, .content {
   position: absolute;
@@ -183,12 +168,33 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: #333; width
 .card :hover .text {
   opacity: 1;
 }
-
-.left-board{
-  border-right: 1px solid #666;
+/* Pagination index styling */
+.paging{
+  display:flex;
+  padding: 10px;
 }
 
+.selected{
+  color:red;
+  font-weight: bold;
+}
+.page-index{
+  flex-flow: row wrap;
+  font-size: 15px;
+  margin: 0 10px;
+  cursor: pointer;
+}
 
+/*---- wrapper ----*/
+.main-page, .result-wrapper{
+  background-color: white;
+  border-radius: 10px;
+  padding:30px;
+}
+
+/*---- wrapper ----*/
+
+/* --- SVG and animations ---- */
 #leaf{
   animation: xAxis 2.5s cubic-bezier(0.02, 0.01, 0.21, 1);
 }
@@ -295,6 +301,7 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: #333; width
   text-align: center;
 }
 
+/* Bootstrap overide styling */
 .btn-info{
   height: 100%;
 }
