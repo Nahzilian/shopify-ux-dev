@@ -8,8 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
 /*
-* Since the code is hosted on github, hence, I put the apikey directly here.
-* However, it would normally be stored in .env file
+* Base API variable for requesting data
 */
 const baseAPI = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=`
 
@@ -18,6 +17,7 @@ function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
 
+/* Alert template for Material UI snackbar */
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -109,11 +109,14 @@ export default function Homepage() {
         localStorage.setItem("nominatedList", JSON.stringify(nominatedList));
         localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
     }
+    /* Check if there was a saved nomination list, if yes open snackbar */
     window.onload = () => {
         if (stateMessage === 1) {
             handleClick()
         }
     }
+
+    /* Check if there was a saved nomination list, if yes define isSearch to true */
     useEffect(() => {
         if (nominatedList.length > 0) {
             setIsSearched(true);
@@ -121,6 +124,12 @@ export default function Homepage() {
 
     }, [nominatedList.length])
 
+
+    /* 
+    Snackbar helper functions 
+     - handleClick : open snackbar
+     - handleClose : close snackbar
+    */
     const handleClick = () => {
         setOpen(true);
     };
@@ -133,15 +142,20 @@ export default function Homepage() {
         setOpen(false);
     };
 
+    /* On demand saving data */
     const saveAllData = () => {
         localStorage.setItem("currentSelectedData", JSON.stringify(currentSelectedData));
         localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
         localStorage.setItem("nominatedList", JSON.stringify(nominatedList));
         localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
-
         handleClick();
     }
-
+    /* 
+    Nominate function: 
+    - Check for the movie availability based on imdbID
+    - Recalculate pagination
+    - Re-distribute data
+    */
     const nominate = (data) => {
         var compareElement = data.imdbID;
         var listOfimdbID = nominatedList.map(x => x.imdbID);
@@ -166,6 +180,11 @@ export default function Homepage() {
             setCurSelectedPage(index);
         }
     }
+    /* 
+    Remove nominate function: 
+    - Recalculate pagination
+    - Re-distribute data
+    */
     const removeNominate = (imdbID) => {
         var temp = nominatedList.filter(x => !(x.imdbID === imdbID));
         setNominatedList(temp);
@@ -189,14 +208,22 @@ export default function Homepage() {
             }
             setCurSelectedData(temp.slice((currentSelectedPage - 1) * pageLimit, currentSelectedPage * pageLimit));
         }
-
     }
 
+    /* 
+    On demand page selection:
+    - Change current page value
+    - Re-distribute data
+    */
     const changeSelectedPage = (index) => {
         setCurSelectedPage(index);
         setCurSelectedData(nominatedList.slice((index - 1) * pageLimit, index * pageLimit))
     }
 
+    /* 
+    API call function
+    Handle response, if there is data being returned, proceed to distribute data, else open error snackbar and skip operation
+    */
     const apiCall = (query) => {
         var reformat = queryFormat(query)
         axios.get(baseAPI + reformat)
@@ -238,27 +265,44 @@ export default function Homepage() {
                 setStateMsg(0);
             })
     }
-
+    /** 
+     * @param {*} query 
+     * Reformat the query for API call
+     */
     const queryFormat = (query) => {
         return query.split(" ").join("+");
     }
 
+    /**
+     * Handle on-submit action of the form.
+     * Request data from API
+     * @param {*} e 
+     */
     const submitHandler = (e) => {
         e.preventDefault();
         if (userQuery && !(userQuery === "")) {
             apiCall(userQuery)
         }
     }
-
+    /**
+         * Handle on-change event of the input box
+         * @param {*} e 
+         */
     const onChangeHandler = (e) => {
         setUserQuery(e.target.value);
     }
-
+    /**
+         * Handle onclick event of pagination
+         * @param {*} e 
+         */
     const changePage = (index) => {
         setCurrentPage(index);
         setCurrentData(data[index - 1]);
     }
-
+    /**
+     * Filter returned data by year
+     * @param {*} year 
+     */
     const filterDataByYear = (year) => {
         var filteredList;
         if (year === "Years") {
@@ -282,6 +326,9 @@ export default function Homepage() {
         setCurrentData(indexData[0]);
         setIsSearched(true);
     }
+    /**
+     * Main content
+     */
     return (
         <FadeIn>
             <div className="container">
@@ -359,7 +406,7 @@ export default function Homepage() {
                                         <div className="col-12">
                                             <div className="row">
                                                 <div className="col-xl-10 col-lg-8 col-md-8">
-                                                    <h4>My nomination list (<span style = {{color:"red"}}>{nominatedList.length}</span> nominees)</h4>
+                                                    <h4>My nomination list (<span style={{ color: "red" }}>{nominatedList.length}</span> nominees)</h4>
                                                 </div>
                                                 <div className="col-xl-2 col-lg-4 col-md-4">
                                                     <button className="btn btn-info" onClick={() => saveAllData()}>
