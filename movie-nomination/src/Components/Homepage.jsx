@@ -99,7 +99,7 @@ export default function Homepage() {
     const [selectedPageIndex, setSelectedPageIndex] = useState(JSON.parse(localStorage.getItem("selectedPageIndex")) || [1]);
     const [isSearched, setIsSearched] = useState(false);
     const [selectedYear, setSelectedYear] = useState(null);
-    const [stateMessage, setStateMsg] = useState(JSON.parse(localStorage.getItem("nominatedList"))? JSON.parse(localStorage.getItem("nominatedList")).length > 0 ? 1 : 0: 0);
+    const [stateMessage, setStateMsg] = useState(JSON.parse(localStorage.getItem("nominatedList"))? JSON.parse(localStorage.getItem("nominatedList")).length > 0 ? 1 : 0: 1);
     /* 
     * Before unload the page/ close the page, it will store the data to the localStorage
     */
@@ -148,6 +148,7 @@ export default function Homepage() {
         localStorage.setItem("selectedPageIndex", JSON.stringify(selectedPageIndex));
         localStorage.setItem("nominatedList", JSON.stringify(nominatedList));
         localStorage.setItem("currentSelectedPage", JSON.stringify(currentSelectedPage));
+        setStateMsg(1)
         handleClick();
     }
     /* 
@@ -455,7 +456,7 @@ export default function Homepage() {
                 onClose={handleClose}
             >
                 <Alert severity={stateMessage === 0 ? "error" : "info"} onClose={handleClose}>
-                    {stateMessage === 0 ? "Something went wrong, please try again later!" :
+                    {stateMessage === 0 ? `Hmm, we found no results for "${userQuery}", try different keywords` :
                         "Phew, your nomination list is safe with us "}
                 </Alert>
             </Snackbar>
