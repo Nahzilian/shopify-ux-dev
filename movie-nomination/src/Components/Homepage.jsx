@@ -99,7 +99,7 @@ export default function Homepage() {
     const [selectedPageIndex, setSelectedPageIndex] = useState(JSON.parse(localStorage.getItem("selectedPageIndex")) || [1]);
     const [isSearched, setIsSearched] = useState(false);
     const [selectedYear, setSelectedYear] = useState(null);
-    const [stateMessage, setStateMsg] = useState(JSON.parse(localStorage.getItem("nominatedList")).length > 0 ? 1 : 0);
+    const [stateMessage, setStateMsg] = useState(JSON.parse(localStorage.getItem("nominatedList"))? JSON.parse(localStorage.getItem("nominatedList")).length > 0 ? 1 : 0: 0);
     /* 
     * Before unload the page/ close the page, it will store the data to the localStorage
     */
